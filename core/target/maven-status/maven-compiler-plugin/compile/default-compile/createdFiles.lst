@@ -1,0 +1,6 @@
+com\aemclub\newscomponent\core\package-info.class
+com\aemclub\newscomponent\core\models\HelloWorldModel.class
+com\aemclub\newscomponent\core\schedulers\SimpleScheduledTask.class
+com\aemclub\newscomponent\core\servlets\SimpleServlet.class
+com\aemclub\newscomponent\core\listeners\SimpleResourceListener.class
+com\aemclub\newscomponent\core\filters\LoggingFilter.class
