@@ -54,59 +54,73 @@ public class SimpleServlet extends SlingSafeMethodsServlet {
 	protected void doGet(final SlingHttpServletRequest req,
 			final SlingHttpServletResponse resp) throws ServletException,
 			IOException {
-		final String guardianNewsAPI ="http://content.guardianapis.com/search?api-key=test&page-size=4&q="; 
-		JSONArray completeJson = new JSONArray();
-		JSONObject appleJson = readJsonFromUrl(guardianNewsAPI+"apple%20tech");
-		JSONObject globeJson = readJsonFromUrl(guardianNewsAPI+"world");
-		JSONObject googleJson = readJsonFromUrl(guardianNewsAPI+"google");
-		JSONObject moneyJson = readJsonFromUrl(guardianNewsAPI+"money");
 
-		completeJson.put(appleJson);
-		completeJson.put(globeJson);
-		completeJson.put(googleJson);
-		completeJson.put(moneyJson);
+		try {
+			final String guardianNewsAPI = "http://content.guardianapis.com/search?api-key=test&page-size=4&q=";
+			JSONArray completeJson = new JSONArray();
+			String paramValue = req.getParameter("tags");
+			LOGGER.info("paramValue:" + paramValue);
+			String[] allTags = paramValue.split("\\|");
 
-		String[] topics = { "apple", "globe", "google", "money" };
+			JSONObject appleJson = readJsonFromUrl(guardianNewsAPI + allTags[0]);
+			JSONObject globeJson = readJsonFromUrl(guardianNewsAPI + allTags[1]);
+			JSONObject googleJson = readJsonFromUrl(guardianNewsAPI
+					+ allTags[2]);
+			JSONObject moneyJson = readJsonFromUrl(guardianNewsAPI + allTags[3]);
 
-		String html = "", active = "";
-		String[] dataHtml = new String[4];
+			completeJson.put(appleJson);
+			completeJson.put(globeJson);
+			completeJson.put(googleJson);
+			completeJson.put(moneyJson);
 
-		for (int i = 0; i < 4; i++) {
+			String[] topics = { allTags[0], allTags[1], allTags[2], allTags[3] };
 
-			// Adding 'active' class to the html of first tab
-			if (i == 0)	active = "active";
-			else active = "";
-			
-			JSONObject x = completeJson.getJSONObject(i);
-			JSONObject response = x.getJSONObject("response"); // Getting response object
-			JSONArray res = new JSONArray();
-			res = response.getJSONArray("results"); // Reading results
+			String html = "", active = "";
+			String[] dataHtml = new String[4];
 
-			
-			// Generating HTML to be returned to client side
-			dataHtml[i] = "<div role=\"tabpanel\" class=\"tab-pane " + active
-					+ "\" id=\"" + topics[i] + "\">"
-					+ "<ul class=\"list-group\">";
-			for (int k = 0; k < res.length(); k++) {
-				JSONObject p = res.getJSONObject(k);
-				String data = "<li class=\"list-group-item\"><span class=\"glyphicon glyphicon-pushpin\">"
-						+ "</span> <span class=\"label label-info\">"
-						+ p.get("sectionId")
-						+ "</span> "
-						+ "<a target=\"_blank\" href = \""
-						+ p.get("webUrl")
-						+ "\"> "
-						+ p.get("webTitle")
-						+ "</a> </li>";
+			for (int i = 0; i < 4; i++) {
 
-				dataHtml[i] = dataHtml[i] + data;
+				// Adding 'active' class to the html of first tab
+				if (i == 0)
+					active = "active";
+				else
+					active = "";
+
+				JSONObject x = completeJson.getJSONObject(i);
+				JSONObject response = x.getJSONObject("response"); // Getting
+																	// response
+																	// object
+				JSONArray res = new JSONArray();
+				res = response.getJSONArray("results"); // Reading results
+
+				// Generating HTML to be returned to client side
+				dataHtml[i] = "<div role=\"tabpanel\" class=\"tab-pane "
+						+ active + "\" id=\"" + topics[i] + "\">"
+						+ "<ul class=\"list-group\">";
+				for (int k = 0; k < res.length(); k++) {
+					JSONObject p = res.getJSONObject(k);
+					String data = "<li class=\"list-group-item\"><span class=\"glyphicon glyphicon-pushpin\">"
+							+ "</span> <span class=\"label label-info\">"
+							+ p.get("sectionId")
+							+ "</span> "
+							+ "<a target=\"_blank\" href = \""
+							+ p.get("webUrl")
+							+ "\"> "
+							+ p.get("webTitle")
+							+ "</a> </li>";
+
+					dataHtml[i] = dataHtml[i] + data;
+				}
+
+				dataHtml[i] = dataHtml[i] + "</ul></div>";
+				html = html + dataHtml[i];
 			}
-		
-			dataHtml[i] = dataHtml[i] + "</ul></div>";
-			html = html + dataHtml[i];
+			resp.setContentType("text/html");
+			resp.getWriter().write(html);
+		} catch (Exception e) {
+
+			LOGGER.info("Something went wrong:" + e.getMessage());
 		}
-		resp.setContentType("text/html");
-		resp.getWriter().write(html);
 	}
 
 	private static String readAll(Reader rd) throws IOException {
