@@ -1,6 +1,9 @@
-# Sample AEM project template
+# AEM News Component
 
-This is a project template for AEM-based applications. It is intended as a best-practice set of examples as well as a potential starting point to develop your own functionality.
+Its a simple News component which uses Guardian News API. It fetches news based on the keyword supplied by user while authoring the news component.
+A user has to supplied 4 keywords, based those keyword news appears. Inorder to avoid several calls to news API, it uses browser localstorage to reduce api calls. 
+
+When initial call is made, it saves the data in browser localstorage and keeps it there till one hour. After 1 hour again data will be take from gaurdian news api. 
 
 ## Modules
 
