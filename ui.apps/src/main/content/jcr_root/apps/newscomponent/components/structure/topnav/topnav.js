@@ -17,6 +17,16 @@
 // Server-side JavaScript for the topnav logic
 use(function () {
     var items = [];
+
+    switch (1) {
+    case 0:
+        log.info("--------------0");
+        break;
+    case 1:
+        log.info("---------------1");
+        break;
+
+}
     var root = currentPage.getAbsoluteParent(1);
     var currentNavPath = currentPage.getAbsoluteParent(2).getPath();
     var it = root.listChildren(new Packages.com.day.cq.wcm.api.PageFilter());
